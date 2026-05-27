@@ -6,158 +6,74 @@
 <title>Tulasi Arvind — Portfolio</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 21C12 21 3 13.5 3 8a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5.5-9 13-9 13z' fill='%23ff69b4' stroke='%23ff1493' stroke-width='1.5'/%3E%3C/svg%3E") 12 21, auto; }
-  body { background: #1a1a2e; font-family: sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  body { background: #f0e6f6; font-family: sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-  /* ── INTRO SCREEN ── */
-  #intro {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    width: 100%;
-    gap: 28px;
-  }
-  #intro-inner {
-    display: flex;
-    align-items: flex-end;
-    gap: 20px;
-    max-width: 640px;
-    width: 90%;
-  }
-  #intro-avatar {
-    height: 110px;
-    image-rendering: pixelated;
-    flex-shrink: 0;
-  }
-  #speech-box {
-    background: #daf0ff;
-    border-radius: 16px;
-    padding: 16px 20px;
-    position: relative;
-    max-width: 420px;
-    border: 2px solid #a8d8f0;
-  }
-  #speech-box::before {
-    content: '';
-    position: absolute;
-    bottom: 18px;
-    left: -16px;
-    border: 8px solid transparent;
-    border-right-color: #a8d8f0;
-  }
-  #speech-box::after {
-    content: '';
-    position: absolute;
-    bottom: 20px;
-    left: -12px;
-    border: 6px solid transparent;
-    border-right-color: #daf0ff;
-  }
-  #speech-box p {
-    font-size: 14px;
-    color: #2a5a7a;
-    line-height: 1.7;
-  }
-  #enter-town-btn {
-    padding: 12px 36px;
-    font-size: 15px;
-    background: #daf0ff;
-    color: #2a5a7a;
-    border: 2px solid #a8d8f0;
-    border-radius: 30px;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-    transition: background 0.2s, transform 0.1s;
-  }
+  /* INTRO */
+  #intro { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; width: 100%; gap: 28px; }
+  #intro-inner { display: flex; align-items: flex-end; gap: 20px; max-width: 640px; width: 90%; }
+  #intro-avatar { height: 110px; image-rendering: pixelated; flex-shrink: 0; }
+  #speech-box { background: #daf0ff; border-radius: 16px; padding: 16px 20px; position: relative; max-width: 420px; border: 2px solid #a8d8f0; }
+  #speech-box::before { content: ''; position: absolute; bottom: 18px; left: -16px; border: 8px solid transparent; border-right-color: #a8d8f0; }
+  #speech-box::after { content: ''; position: absolute; bottom: 20px; left: -12px; border: 6px solid transparent; border-right-color: #daf0ff; }
+  #speech-box p { font-size: 14px; color: #2a5a7a; line-height: 1.7; }
+  #enter-town-btn { padding: 12px 36px; font-size: 15px; background: #daf0ff; color: #2a5a7a; border: 2px solid #a8d8f0; border-radius: 30px; cursor: pointer; letter-spacing: 0.5px; transition: background 0.2s, transform 0.1s; }
   #enter-town-btn:hover { background: #bce3f7; transform: scale(1.03); }
   #enter-town-btn:active { transform: scale(0.97); }
 
-  /* ── TOWN SCREEN ── */
+  /* TOWN */
   #town { display: none; flex-direction: column; align-items: center; width: 100%; min-height: 100vh; padding: 24px 16px 12px; }
-  #scene {
-    position: relative;
-    width: 100%;
-    max-width: 720px;
-    padding-top: 52%;
-    overflow: hidden;
-    border-radius: 12px;
-    image-rendering: pixelated;
-  }
-  #bg {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    object-position: bottom;
-  }
-  .bld {
-    position: absolute;
-    bottom: 14%;
-    height: 42%;
-    width: auto;
-    image-rendering: pixelated;
-    transition: filter 0.2s;
-  }
-  #bank { left: 10%; }
-  #cafe { right: 8%; }
-  .bld.near { filter: drop-shadow(0 0 8px rgba(255,255,180,0.95)); }
-  #avatar {
-    position: absolute;
-    bottom: 14%;
-    height: 14%;
-    image-rendering: pixelated;
-    z-index: 10;
-  }
-  #info {
-    margin-top: 10px;
-    padding: 10px 14px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 10px;
-    border: 0.5px solid rgba(255,255,255,0.15);
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    max-width: 720px;
-    width: 100%;
-  }
-  #info-text { font-size: 13px; color: #ccc; flex: 1; }
-  #enter-btn {
-    font-size: 12px; padding: 5px 12px;
+  #scene { position: relative; width: 100%; max-width: 720px; padding-top: 52%; overflow: hidden; border-radius: 12px; image-rendering: pixelated; }
+  #bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: bottom; }
+
+  /* buildings */
+  .bld-wrap { position: absolute; bottom: 14%; display: flex; flex-direction: column; align-items: center; gap: 0; }
+  #bank-wrap { left: 10%; }
+  #cafe-wrap { right: 8%; }
+  .bld { height: 42%; width: auto; image-rendering: pixelated; transition: filter 0.2s; display: block; }
+  .bld-wrap.near .bld { filter: drop-shadow(0 0 8px rgba(255,255,180,0.95)); }
+
+  /* label above building */
+  .bld-label {
+    background: rgba(255,255,255,0.88);
+    border: 1px solid rgba(180,140,220,0.4);
     border-radius: 8px;
-    border: 0.5px solid rgba(255,255,255,0.3);
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    cursor: pointer; white-space: nowrap; display: none;
+    padding: 5px 10px;
+    font-size: 11px;
+    color: #5a3a7a;
+    text-align: center;
+    max-width: 140px;
+    line-height: 1.4;
+    margin-bottom: 4px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
   }
-  #enter-btn:hover { background: rgba(255,255,255,0.2); }
+  .bld-wrap.near .bld-label { opacity: 1; transform: translateY(0); }
+
+  /* avatar */
+  #avatar { position: absolute; bottom: 14%; height: 14%; image-rendering: pixelated; z-index: 10; }
+
+  /* info bar */
+  #info { margin-top: 10px; padding: 10px 14px; background: rgba(180,140,220,0.15); border-radius: 10px; border: 0.5px solid rgba(180,140,220,0.3); min-height: 48px; display: flex; align-items: center; gap: 10px; max-width: 720px; width: 100%; }
+  #info-text { font-size: 13px; color: #5a3a7a; flex: 1; }
+  #enter-btn { font-size: 12px; padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(180,140,220,0.5); background: rgba(180,140,220,0.15); color: #5a3a7a; cursor: pointer; white-space: nowrap; display: none; }
+  #enter-btn:hover { background: rgba(180,140,220,0.3); }
+
+  /* controls */
   #btns { display: flex; justify-content: center; gap: 12px; margin-top: 10px; }
-  #btns button {
-    width: 46px; height: 46px;
-    border-radius: 10px;
-    border: 0.5px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.08);
-    color: #fff;
-    font-size: 20px; cursor: pointer;
-  }
-  #btns button:active { transform: scale(0.94); background: rgba(255,255,255,0.15); }
-  #hint { text-align: center; font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 6px; }
-  #footer {
-    margin-top: 20px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.3);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
+  #btns button { width: 46px; height: 46px; border-radius: 10px; border: 1px solid rgba(180,140,220,0.4); background: rgba(180,140,220,0.12); color: #5a3a7a; font-size: 20px; cursor: pointer; }
+  #btns button:active { transform: scale(0.94); background: rgba(180,140,220,0.25); }
+  #hint { text-align: center; font-size: 11px; color: #b8a0cc; margin-top: 6px; }
+  #footer { margin-top: 20px; font-size: 12px; color: #b8a0cc; letter-spacing: 1px; text-transform: uppercase; }
 </style>
 </head>
 <body>
 
-<!-- INTRO SCREEN -->
+<!-- INTRO -->
 <div id="intro">
   <div id="intro-inner">
-    <img id="intro-avatar" src="Minigame_Girl.png" alt="Tulasi's avatar">
+    <img id="intro-avatar" src="minigame_girl.png" alt="Tulasi's avatar">
     <div id="speech-box">
       <p>Hi! I'm <strong>Tulasi Arvind</strong>, a senior at Purdue University. I'm passionate about data-driven projects, learning new things, and building fun stuff. As I grow and try new things — so does this little world. ✨</p>
     </div>
@@ -165,45 +81,53 @@
   <button id="enter-town-btn">Enter the town →</button>
 </div>
 
-<!-- TOWN SCREEN -->
+<!-- TOWN -->
 <div id="town">
   <div id="scene">
-    <img id="bg" src="BG_Town.png" alt="town background">
-    <img id="bank" class="bld" src="BANK.png" alt="Bank building">
-    <img id="cafe" class="bld" src="CAFE_TOWN.png" alt="Cafe building">
-    <img id="avatar" src="Minigame_Girl.png" alt="Tulasi's avatar">
+    <img id="bg" src="bg_town.png" alt="town background">
+
+    <div class="bld-wrap" id="bank-wrap">
+      <div class="bld-label">🏦 FOMO App — browse & save local events so you never miss out on what's happening around you</div>
+      <img class="bld" src="bank.png" alt="Bank building">
+    </div>
+
+    <div class="bld-wrap" id="cafe-wrap">
+      <div class="bld-label">☕ Coffee Analysis — explore what makes a great cup through interactive charts and data insights</div>
+      <img class="bld" src="cafe_town.png" alt="Cafe building">
+    </div>
+
+    <img id="avatar" src="minigame_girl.png" alt="Tulasi's avatar">
   </div>
+
   <div id="info">
     <span id="info-icon">👣</span>
-    <span id="info-text">Walk up to a building to learn about the project!</span>
-    <button id="enter-btn">Enter →</button>
+    <span id="info-text">Walk up to a building — press ↑ to enter!</span>
+    <button id="enter-btn">Enter ↑</button>
   </div>
   <div id="btns">
     <button id="btn-l" aria-label="Move left">←</button>
     <button id="btn-r" aria-label="Move right">→</button>
   </div>
-  <p id="hint">Arrow keys · or tap the buttons above</p>
+  <p id="hint">← → to walk · ↑ to enter a building</p>
   <p id="footer">Tulasi Arvind</p>
 </div>
 
 <script>
-  // ── INTRO → TOWN transition ──
   document.getElementById('enter-town-btn').addEventListener('click', () => {
     document.getElementById('intro').style.display = 'none';
     document.getElementById('town').style.display = 'flex';
     draw();
   });
 
-  // ── TOWN LOGIC ──
   const buildings = [
     {
-      el: document.getElementById('bank'),
-      desc: '🏦 FOMO App — never miss out on events again. Track, discover and stay in the loop.',
+      wrap: document.getElementById('bank-wrap'),
+      desc: '🏦 FOMO App — browse and save local events so you never miss out on what\'s happening around you.',
       url: 'https://fomo-app-chi.vercel.app/'
     },
     {
-      el: document.getElementById('cafe'),
-      desc: '☕ Coffee Analysis — a deep dive into coffee data. Charts, trends and caffeine insights.',
+      wrap: document.getElementById('cafe-wrap'),
+      desc: '☕ Coffee Analysis — explore what makes a great cup through interactive charts and data insights.',
       url: 'https://save-my-coffee-gaexdmuw6othoklcgvhtdy.streamlit.app/'
     }
   ];
@@ -218,7 +142,7 @@
 
   function getBldCenter(b) {
     const sr = scene.getBoundingClientRect();
-    const br = b.el.getBoundingClientRect();
+    const br = b.wrap.getBoundingClientRect();
     return (br.left - sr.left + br.width / 2) / sr.width;
   }
 
@@ -240,18 +164,22 @@
         infoText.textContent = closest.desc;
         enterBtn.style.display = 'inline-block';
         enterBtn.onclick = () => window.open(closest.url, '_blank');
-        buildings.forEach(b => b.el.classList.remove('near'));
-        closest.el.classList.add('near');
+        buildings.forEach(b => b.wrap.classList.remove('near'));
+        closest.wrap.classList.add('near');
       }
     } else {
       if (nearB) {
         nearB = null;
         infoIcon.textContent = '👣';
-        infoText.textContent = 'Walk up to a building to learn about the project!';
+        infoText.textContent = 'Walk up to a building — press ↑ to enter!';
         enterBtn.style.display = 'none';
-        buildings.forEach(b => b.el.classList.remove('near'));
+        buildings.forEach(b => b.wrap.classList.remove('near'));
       }
     }
+  }
+
+  function enterNearest() {
+    if (nearB) window.open(nearB.url, '_blank');
   }
 
   function startMove(dir) {
@@ -278,9 +206,11 @@
   document.getElementById('btn-r').addEventListener('touchstart', e => { e.preventDefault(); startMove(1); });
   document.addEventListener('mouseup', stopMove);
   document.addEventListener('touchend', stopMove);
+
   document.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft')  { e.preventDefault(); startMove(-1); }
     if (e.key === 'ArrowRight') { e.preventDefault(); startMove(1); }
+    if (e.key === 'ArrowUp')    { e.preventDefault(); enterNearest(); }
   });
   document.addEventListener('keyup', e => {
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') stopMove();
