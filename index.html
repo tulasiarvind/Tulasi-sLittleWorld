@@ -25,45 +25,28 @@
   #scene { position: relative; width: 100%; max-width: 720px; padding-top: 52%; overflow: hidden; border-radius: 12px; image-rendering: pixelated; }
   #bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: bottom; }
 
-  /* buildings */
-  .bld-wrap { position: absolute; bottom: 14%; display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .bld-wrap { position: absolute; bottom: 14%; display: flex; flex-direction: column; align-items: center; }
   #bank-wrap { left: 10%; }
   #cafe-wrap { right: 8%; }
   .bld { height: 42%; width: auto; image-rendering: pixelated; transition: filter 0.2s; display: block; }
   .bld-wrap.near .bld { filter: drop-shadow(0 0 8px rgba(255,255,180,0.95)); }
-
-  /* label above building */
-  .bld-label {
-    background: rgba(255,255,255,0.88);
-    border: 1px solid rgba(180,140,220,0.4);
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 11px;
-    color: #5a3a7a;
-    text-align: center;
-    max-width: 140px;
-    line-height: 1.4;
-    margin-bottom: 4px;
-    opacity: 0;
-    transform: translateY(4px);
-    transition: opacity 0.2s, transform 0.2s;
-    pointer-events: none;
-  }
+  .bld-label { background: rgba(255,255,255,0.92); border: 1px solid rgba(180,140,220,0.4); border-radius: 8px; padding: 5px 10px; font-size: 11px; color: #5a3a7a; text-align: center; max-width: 150px; line-height: 1.4; margin-bottom: 4px; opacity: 0; transform: translateY(4px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
   .bld-wrap.near .bld-label { opacity: 1; transform: translateY(0); }
 
-  /* avatar */
   #avatar { position: absolute; bottom: 14%; height: 14%; image-rendering: pixelated; z-index: 10; }
 
-  /* info bar */
   #info { margin-top: 10px; padding: 10px 14px; background: rgba(180,140,220,0.15); border-radius: 10px; border: 0.5px solid rgba(180,140,220,0.3); min-height: 48px; display: flex; align-items: center; gap: 10px; max-width: 720px; width: 100%; }
   #info-text { font-size: 13px; color: #5a3a7a; flex: 1; }
   #enter-btn { font-size: 12px; padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(180,140,220,0.5); background: rgba(180,140,220,0.15); color: #5a3a7a; cursor: pointer; white-space: nowrap; display: none; }
   #enter-btn:hover { background: rgba(180,140,220,0.3); }
 
-  /* controls */
   #btns { display: flex; justify-content: center; gap: 12px; margin-top: 10px; }
   #btns button { width: 46px; height: 46px; border-radius: 10px; border: 1px solid rgba(180,140,220,0.4); background: rgba(180,140,220,0.12); color: #5a3a7a; font-size: 20px; cursor: pointer; }
   #btns button:active { transform: scale(0.94); background: rgba(180,140,220,0.25); }
+
+  #music-btn { font-size: 11px; padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(180,140,220,0.4); background: rgba(180,140,220,0.12); color: #5a3a7a; cursor: pointer; margin-top: 8px; }
+  #music-btn:hover { background: rgba(180,140,220,0.25); }
+
   #hint { text-align: center; font-size: 11px; color: #b8a0cc; margin-top: 6px; }
   #footer { margin-top: 20px; font-size: 12px; color: #b8a0cc; letter-spacing: 1px; text-transform: uppercase; }
 </style>
@@ -108,26 +91,125 @@
     <button id="btn-l" aria-label="Move left">←</button>
     <button id="btn-r" aria-label="Move right">→</button>
   </div>
+  <button id="music-btn">🎵 music on</button>
   <p id="hint">← → to walk · ↑ to enter a building</p>
   <p id="footer">Tulasi Arvind</p>
 </div>
 
 <script>
+  // SOUND ENGINE
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let ctx;
+
+  function beep(freq, duration, type = 'sine') {
+    if (!ctx) ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq;
+    osc.type = type;
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration);
+  }
+
+  // BACKGROUND MUSIC
+  let musicPlaying = false;
+  let musicGain;
+  let musicScheduler;
+
+  // calm pentatonic melody — C D E G A, looping gently
+  const melody = [261.6, 329.6, 392, 440, 392, 329.6,
+                  261.6, 293.7, 349.2, 392, 349.2, 293.7,
+                  261.6, 329.6, 440, 392, 329.6, 261.6];
+  const tempo = 0.52;
+
+  function startMusic() {
+    if (musicPlaying) return;
+    if (!ctx) ctx = new AudioCtx();
+    musicPlaying = true;
+    document.getElementById('music-btn').textContent = '🎵 music off';
+
+    musicGain = ctx.createGain();
+    musicGain.gain.setValueAtTime(0, ctx.currentTime);
+    musicGain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 1.5);
+    musicGain.connect(ctx.destination);
+
+    let noteIndex = 0;
+    let nextTime = ctx.currentTime + 0.1;
+
+    function playNote(freq, time) {
+      // main melody — soft sine
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.connect(g); g.connect(musicGain);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      g.gain.setValueAtTime(0, time);
+      g.gain.linearRampToValueAtTime(1, time + 0.06);
+      g.gain.setValueAtTime(1, time + tempo * 0.55);
+      g.gain.linearRampToValueAtTime(0, time + tempo * 0.9);
+      osc.start(time); osc.stop(time + tempo);
+
+      // gentle harmony one octave down — triangle wave
+      const osc2 = ctx.createOscillator();
+      const g2 = ctx.createGain();
+      osc2.connect(g2); g2.connect(musicGain);
+      osc2.type = 'triangle';
+      osc2.frequency.value = freq / 2;
+      g2.gain.setValueAtTime(0, time);
+      g2.gain.linearRampToValueAtTime(0.35, time + 0.1);
+      g2.gain.linearRampToValueAtTime(0, time + tempo * 0.85);
+      osc2.start(time); osc2.stop(time + tempo);
+    }
+
+    function schedule() {
+      while (nextTime < ctx.currentTime + 2.5) {
+        playNote(melody[noteIndex % melody.length], nextTime);
+        noteIndex++;
+        nextTime += tempo;
+      }
+      if (musicPlaying) musicScheduler = setTimeout(schedule, 500);
+    }
+    schedule();
+  }
+
+  function stopMusic() {
+    musicPlaying = false;
+    clearTimeout(musicScheduler);
+    document.getElementById('music-btn').textContent = '🎵 music on';
+    if (musicGain) {
+      musicGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.8);
+    }
+  }
+
+  document.getElementById('music-btn').addEventListener('click', () => {
+    if (musicPlaying) stopMusic(); else startMusic();
+  });
+
+  // INTRO → TOWN
   document.getElementById('enter-town-btn').addEventListener('click', () => {
+    if (!ctx) ctx = new AudioCtx();
+    beep(440, 0.1);
+    setTimeout(() => beep(550, 0.15), 120);
     document.getElementById('intro').style.display = 'none';
     document.getElementById('town').style.display = 'flex';
+    setTimeout(startMusic, 400);
     draw();
   });
 
+  // TOWN LOGIC
   const buildings = [
     {
       wrap: document.getElementById('bank-wrap'),
-      desc: '🏦 FOMO App — browse and save local events so you never miss out on what\'s happening around you.',
+      desc: "🏦 FOMO — financial tracking that speaks your language. Spending too much on Pokémon cards? We'll show you how to hit your goals and still treat yourself.",
       url: 'https://fomo-app-chi.vercel.app/'
     },
     {
       wrap: document.getElementById('cafe-wrap'),
-      desc: '☕ Coffee Analysis — explore what makes a great cup through interactive charts and data insights.',
+      desc: "☕ Coffee & Climate — rising global temps threaten coffee regions. A data deep dive into Brazil's growing conditions and what the future holds for your morning cup.",
       url: 'https://save-my-coffee-gaexdmuw6othoklcgvhtdy.streamlit.app/'
     }
   ];
@@ -163,9 +245,10 @@
         infoIcon.textContent = '🏠';
         infoText.textContent = closest.desc;
         enterBtn.style.display = 'inline-block';
-        enterBtn.onclick = () => window.open(closest.url, '_blank');
+        enterBtn.onclick = () => enterNearest();
         buildings.forEach(b => b.wrap.classList.remove('near'));
         closest.wrap.classList.add('near');
+        beep(440, 0.08, 'sine');
       }
     } else {
       if (nearB) {
@@ -179,18 +262,25 @@
   }
 
   function enterNearest() {
-    if (nearB) window.open(nearB.url, '_blank');
+    if (!nearB) return;
+    beep(520, 0.1);
+    setTimeout(() => beep(660, 0.1), 100);
+    setTimeout(() => beep(880, 0.15), 210);
+    setTimeout(() => window.open(nearB.url, '_blank'), 400);
   }
 
   function startMove(dir) {
     if (moving === dir) return;
     moving = dir;
     let last = null;
+    let stepAcc = 0;
     function step(ts) {
       if (!last) last = ts;
       const dt = (ts - last) / 1000;
       last = ts;
       pos = Math.max(0.02, Math.min(0.98, pos + dir * dt * 0.55));
+      stepAcc += dt;
+      if (stepAcc > 0.3) { beep(200, 0.08, 'triangle'); stepAcc = 0; }
       draw();
       animFrame = requestAnimationFrame(step);
     }
